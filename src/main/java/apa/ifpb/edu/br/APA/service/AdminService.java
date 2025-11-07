@@ -1,6 +1,7 @@
 package apa.ifpb.edu.br.APA.service;
 
 import apa.ifpb.edu.br.APA.dto.AdminResponseDTO;
+import apa.ifpb.edu.br.APA.exception.RecursoNaoEncontradoException;
 import apa.ifpb.edu.br.APA.mapper.AdminMapper;
 import apa.ifpb.edu.br.APA.model.Admin;
 import apa.ifpb.edu.br.APA.repository.AdminRepository;
@@ -30,7 +31,7 @@ public class AdminService {
     @Transactional(readOnly = true)
     public AdminResponseDTO buscarPorId(Long id) {
         Admin admin = adminRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Admin não encontrado com id: " + id)); // Exceção simples
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Admin não encontrado com id: " + id));
 
         return adminMapper.toResponseDTO(admin);
     }
@@ -39,7 +40,7 @@ public class AdminService {
     @Transactional(readOnly = true)
     public AdminResponseDTO buscarPorLogin(int login) {
         Admin admin = adminRepository.findByLogin(login)
-                .orElseThrow(() -> new RuntimeException("Admin não encontrado com login: " + login));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Admin não encontrado com login: " + login));
 
         return adminMapper.toResponseDTO(admin);
     }
