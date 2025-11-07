@@ -12,4 +12,20 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
+
+    @ExceptionHandler(RecursoJaExisteException.class)
+    public ResponseEntity<ErrorMessage> handleRecursoJaExiste(RecursoJaExisteException ex) {
+
+        ErrorMessage response = new ErrorMessage(HttpStatus.CONFLICT.value(),ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(OperacaoInvalidaException.class)
+    public ResponseEntity<ErrorMessage> handleOperacaoInvalida(OperacaoInvalidaException ex) {
+
+        ErrorMessage response = new ErrorMessage(HttpStatus.BAD_REQUEST.value(),ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 }
