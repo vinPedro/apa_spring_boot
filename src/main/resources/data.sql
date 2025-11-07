@@ -1,0 +1,1 @@
+INSERT IGNORE INTO especialidade (nome, descricao) VALUES ('OUTRO', 'Especialidade padrão do sistema.');
