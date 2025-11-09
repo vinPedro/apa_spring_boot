@@ -1,12 +1,16 @@
 package apa.ifpb.edu.br.APA.service;
 
 import apa.ifpb.edu.br.APA.dto.UnidadeSaudeDTO;
+import apa.ifpb.edu.br.APA.exception.OperacaoInvalidaException;
 import apa.ifpb.edu.br.APA.exception.RecursoJaExisteException;
 import apa.ifpb.edu.br.APA.exception.RecursoNaoEncontradoException;
 import apa.ifpb.edu.br.APA.mapper.UnidadeSaudeMapper;
 import apa.ifpb.edu.br.APA.model.UnidadeSaude;
+import apa.ifpb.edu.br.APA.repository.PacienteRepository;
+import apa.ifpb.edu.br.APA.repository.ProfissionalRepository;
 import apa.ifpb.edu.br.APA.repository.UnidadeSaudeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +23,10 @@ public class UnidadeSaudeService {
 
     private final UnidadeSaudeRepository unidadeSaudeRepository;
     private final UnidadeSaudeMapper unidadeSaudeMapper;
+    @Autowired
+    private ProfissionalRepository profissionalRepository;
+    @Autowired
+    private PacienteRepository pacienteRepository;
 
     // Busca todas as unidades no banco e as converte para DTO.
     @Transactional(readOnly = true)
@@ -74,15 +82,18 @@ public class UnidadeSaudeService {
         UnidadeSaude atualizada = unidadeSaudeRepository.save(unidade);
         return unidadeSaudeMapper.toDTO(atualizada);
     }
-
-    // Deleta uma unidade pelo ID. Lança exceção se não encontrar.
+    //deleta unidade de saude
     @Transactional
     public void deletarUnidade(Long id) {
         UnidadeSaude unidade = unidadeSaudeRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Unidade de Saúde não encontrada com id: " + id));
 
-        // Adicionar futuramente: Não deixar deletar se tiver profissionais ou pacientes vinculados
-
+        if (pacienteRepository.existsByUnidadeSaudeVinculadaId(id)) {
+            throw new OperacaoInvalidaException("Não é possível excluir a Unidade de Saúde pois existem pacientes vinculados a ela.");
+        }
+        if (profissionalRepository.existsByUbsVinculadaId(id)) {
+            throw new OperacaoInvalidaException("Não é possível excluir a Unidade de Saúde pois existem profissionais vinculados a ela.");
+        }
         unidadeSaudeRepository.delete(unidade);
     }
 }

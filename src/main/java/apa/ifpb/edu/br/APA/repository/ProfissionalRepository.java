@@ -12,4 +12,5 @@ public interface ProfissionalRepository extends JpaRepository<Profissional, Long
     Optional<Profissional> findByCpf(String cpf);
     Optional<Profissional> findByCns(String cns);
     Optional<Profissional> findByEmailInstitucional(String email);
+    boolean existsByUbsVinculadaId(Long ubsVinculadaId);
 }
