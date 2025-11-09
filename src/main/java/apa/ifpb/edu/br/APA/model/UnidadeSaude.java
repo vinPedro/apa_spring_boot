@@ -24,7 +24,6 @@ public class UnidadeSaude {
     @Column(nullable = false)
     private String nome;
 
-    // --- Endereço ---
     @Column(nullable = false)
     private String logradouro;
 
