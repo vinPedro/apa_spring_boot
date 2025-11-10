@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 );
 
-        // (VAMOS ADICIONAR O FILTRO JWT AQUI DAQUI A POUCO)
+        // (ADICIONAR O FILTRO JWT AQUI DAQUI A POUCO)
 
         return http.build();
     }
