@@ -55,6 +55,7 @@ public class Profissional {
 
     private int telefoneContato;
 
-    @Column(nullable = false)
-    private String senha;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+    private Usuario usuario;
 }
