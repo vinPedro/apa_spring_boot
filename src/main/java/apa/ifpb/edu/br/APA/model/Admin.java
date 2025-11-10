@@ -13,9 +13,7 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private int login;
-
-    @Column(nullable = false)
-    private String senha;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+    private Usuario usuario;
 }
