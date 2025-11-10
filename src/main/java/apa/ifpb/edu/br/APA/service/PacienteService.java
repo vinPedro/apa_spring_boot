@@ -6,12 +6,14 @@ import apa.ifpb.edu.br.APA.exception.OperacaoInvalidaException;
 import apa.ifpb.edu.br.APA.exception.RecursoNaoEncontradoException;
 import apa.ifpb.edu.br.APA.mapper.PacienteMapper;
 import apa.ifpb.edu.br.APA.model.Paciente;
+import apa.ifpb.edu.br.APA.model.Role;
 import apa.ifpb.edu.br.APA.model.UnidadeSaude;
+import apa.ifpb.edu.br.APA.model.Usuario;
 import apa.ifpb.edu.br.APA.repository.PacienteRepository;
 import apa.ifpb.edu.br.APA.repository.UnidadeSaudeRepository;
-
+import apa.ifpb.edu.br.APA.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -21,30 +23,38 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PacienteService {
 
-    @Autowired
-    private PacienteRepository pacienteRepository;
-
-    @Autowired
-    private UnidadeSaudeRepository unidadeSaudeRepository;
-
-    @Autowired
-    private PacienteMapper pacienteMapper;
+    private final PacienteRepository pacienteRepository;
+    private final UnidadeSaudeRepository unidadeSaudeRepository;
+    private final PacienteMapper pacienteMapper;
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public PacienteResponseDTO criarPaciente(PacienteRequestDTO dto) {
 
         validarCpfECns(dto.getCpf(), dto.getCns(), null);
 
+        usuarioRepository.findByLogin(dto.getEmail()).ifPresent(u -> {
+            throw new OperacaoInvalidaException("Email já cadastrado para outro usuário.");
+        });
+
         Paciente paciente = pacienteMapper.toEntity(dto);
 
         UnidadeSaude ubs = buscarUbsPorId(dto.getUnidadeSaudeId());
         paciente.setUnidadeSaudeVinculada(ubs);
 
-        // ADD CRIPTOGRAFIA
-        paciente.setSenha(dto.getSenha());
+        String senhaCriptografada = passwordEncoder.encode(dto.getSenha());
+
+        Usuario novoUsuario = new Usuario(
+                null,
+                dto.getEmail(),
+                senhaCriptografada,
+                Role.ROLE_PACIENTE
+        );
+
+        paciente.setUsuario(novoUsuario);
 
         Paciente pacienteSalvo = pacienteRepository.save(paciente);
-
         return pacienteMapper.toResponseDTO(pacienteSalvo);
     }
 
@@ -69,15 +79,26 @@ public class PacienteService {
         Paciente pacienteExistente = buscarPacienteExistente(id);
         validarCpfECns(dto.getCpf(), dto.getCns(), id);
 
+        String novoEmail = dto.getEmail();
+        String emailAtual = pacienteExistente.getUsuario().getLogin();
+
+        if (novoEmail != null && !novoEmail.equals(emailAtual)) {
+            usuarioRepository.findByLogin(novoEmail).ifPresent(u -> {
+                throw new OperacaoInvalidaException("Email já cadastrado para outro usuário.");
+            });
+            pacienteExistente.getUsuario().setLogin(novoEmail); // Atualiza o login
+        }
+
         pacienteMapper.updateEntityFromDTO(dto, pacienteExistente);
 
         Long idUbsDto = dto.getUnidadeSaudeId();
         Long idUbsExistente = pacienteExistente.getUnidadeSaudeVinculada().getId();
 
-        if (!idUbsDto.equals(idUbsExistente)) {
+        if (idUbsDto != null && !idUbsDto.equals(idUbsExistente)) {
             UnidadeSaude novaUbs = buscarUbsPorId(idUbsDto);
             pacienteExistente.setUnidadeSaudeVinculada(novaUbs);
         }
+
 
         Paciente pacienteAtualizado = pacienteRepository.save(pacienteExistente);
 
@@ -102,14 +123,12 @@ public class PacienteService {
     }
 
     private void validarCpfECns(String cpf, String cns, Long pacienteId) {
-        // Valida CPF
         pacienteRepository.findByCpf(cpf).ifPresent(paciente -> {
             if (pacienteId == null || !paciente.getId().equals(pacienteId)) {
                 throw new OperacaoInvalidaException("CPF já cadastrado para outro paciente.");
             }
         });
 
-        // Valida CNS
         pacienteRepository.findByCns(cns).ifPresent(paciente -> {
             if (pacienteId == null || !paciente.getId().equals(pacienteId)) {
                 throw new OperacaoInvalidaException("CNS já cadastrado para outro paciente.");
