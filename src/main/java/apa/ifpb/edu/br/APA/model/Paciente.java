@@ -23,7 +23,6 @@ public class Paciente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Cartão Nacional de Saúde
     @Column(length = 15, nullable = false, unique = true)
     private String cns;
 
@@ -51,8 +50,9 @@ public class Paciente {
     @JoinColumn(name = "ubs_id", nullable = false)
     private UnidadeSaude unidadeSaudeVinculada;
 
-    @Column(nullable = false)
-    private String senha;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+    private Usuario usuario;
 
     @Column(nullable = false)
     private String logradouro;
