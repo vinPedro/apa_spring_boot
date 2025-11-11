@@ -10,10 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AdminResponseDTO {
     private Long id;
-    private int login;
+    private String login;
 
-    public AdminResponseDTO(Admin admin) {
-        this.id = admin.getId();
-        this.login = admin.getLogin();
-    }
 }

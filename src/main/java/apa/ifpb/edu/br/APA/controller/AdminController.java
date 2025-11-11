@@ -35,7 +35,7 @@ public class AdminController {
 
     //Endpoint para buscar um adm pelo login.
     @GetMapping("/login/{login}")
-    public ResponseEntity<AdminResponseDTO> buscarAdminPorLogin(@PathVariable int login) {
+    public ResponseEntity<AdminResponseDTO> buscarAdminPorLogin(@PathVariable String login) {
         AdminResponseDTO admin = adminService.buscarPorLogin(login);
         return ResponseEntity.ok(admin);
     }
