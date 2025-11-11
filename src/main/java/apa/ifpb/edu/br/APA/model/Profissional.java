@@ -53,7 +53,7 @@ public class Profissional {
     @Column(nullable = false, unique = true)
     private String emailInstitucional;
 
-    private int telefoneContato;
+    private String telefoneContato;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id", referencedColumnName = "id")
