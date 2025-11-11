@@ -12,13 +12,14 @@ public interface PacienteMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "unidadeSaudeVinculada", ignore = true)
+    @Mapping(target = "usuario", ignore = true)
     Paciente toEntity(PacienteRequestDTO dto);
 
     @Mapping(source = "unidadeSaudeVinculada.id", target = "unidadeSaudeId")
     PacienteResponseDTO toResponseDTO(Paciente paciente);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "senha", ignore = true)
+    @Mapping(target = "usuario", ignore = true)
     @Mapping(target = "unidadeSaudeVinculada", ignore = true)
     void updateEntityFromDTO(PacienteRequestDTO dto, @MappingTarget Paciente paciente);
 }
