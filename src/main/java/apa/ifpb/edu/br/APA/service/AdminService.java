@@ -38,8 +38,8 @@ public class AdminService {
 
     //Busca um admin especifico pelo login
     @Transactional(readOnly = true)
-    public AdminResponseDTO buscarPorLogin(int login) {
-        Admin admin = adminRepository.findByLogin(login)
+    public AdminResponseDTO buscarPorLogin(String login) {
+        Admin admin = adminRepository.findByUsuarioLogin(login)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Admin não encontrado com login: " + login));
 
         return adminMapper.toResponseDTO(admin);

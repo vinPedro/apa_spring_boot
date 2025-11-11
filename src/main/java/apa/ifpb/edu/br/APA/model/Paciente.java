@@ -41,7 +41,7 @@ public class Paciente {
     @Enumerated(EnumType.STRING)
     private RacaCor racaCor;
 
-    private int telefone;
+    private String telefone;
 
     @Email(message ="Formato de email inválido.")
     private String email;

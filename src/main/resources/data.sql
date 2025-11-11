@@ -1,1 +1,4 @@
-INSERT IGNORE INTO especialidade (nome, descricao) VALUES ('OUTRO', 'Especialidade padrão do sistema.');
+-- Adiciona a especialidade padrão
+MERGE INTO especialidade (id, nome, descricao)
+    KEY(id)
+    VALUES (1, 'OUTRO', 'Especialidade padrão do sistema.');
