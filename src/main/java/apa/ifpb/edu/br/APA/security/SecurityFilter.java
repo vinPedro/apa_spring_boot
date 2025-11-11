@@ -1,4 +1,3 @@
-// Caminho: src/main/java/apa/ifpb/edu/br/APA/security/SecurityFilter.java
 package apa.ifpb.edu.br.APA.security;
 
 import apa.ifpb.edu.br.APA.repository.UsuarioRepository;

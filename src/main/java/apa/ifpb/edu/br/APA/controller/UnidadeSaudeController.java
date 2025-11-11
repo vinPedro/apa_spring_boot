@@ -3,6 +3,7 @@ package apa.ifpb.edu.br.APA.controller;
 
 import apa.ifpb.edu.br.APA.dto.UnidadeSaudeDTO;
 import apa.ifpb.edu.br.APA.service.UnidadeSaudeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

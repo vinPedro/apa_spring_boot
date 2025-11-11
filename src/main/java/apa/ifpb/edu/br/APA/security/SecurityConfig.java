@@ -1,4 +1,3 @@
-// Caminho: src/main/java/apa/ifpb/edu/br/APA/security/SecurityConfig.java
 package apa.ifpb.edu.br.APA.security;
 
 import lombok.RequiredArgsConstructor;
