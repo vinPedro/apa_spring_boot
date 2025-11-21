@@ -49,31 +49,5 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("**************************************************");
         }
 
-        // --- Bloco 2: O TESTE DEFINITIVO (Criar Unidade de Saúde) ---
-        // Vamos tentar criar uma unidade com CNES "0000000"
-        if (unidadeSaudeRepository.findByCodigoCnes("0000000").isEmpty()) {
-
-            System.out.println(">>> INICIANDO TESTE: Criando Unidade de Saúde via Java...");
-
-            // 1. Criamos um DTO limpo, em Java.
-            UnidadeSaudeDTO dto = new UnidadeSaudeDTO();
-            dto.setCodigoCnes("0000000");
-            dto.setCnpj("99999999000199");
-            dto.setNome("PSF DE TESTE DO INITIALIZER"); // <-- O CAMPO 'NOME' NÃO É NULO
-            dto.setLogradouro("Rua do Teste");
-            dto.setBairro("Bairro Teste");
-            dto.setMunicipio("Cidade Teste");
-            dto.setUf("PB");
-
-            try {
-                // 2. Chamamos o MESMO service que o Controller chama
-                unidadeSaudeService.criarUnidade(dto);
-
-                System.out.println(">>> TESTE OK: Unidade de Saúde de teste criada com SUCESSO.");
-            } catch (Exception e) {
-                System.err.println(">>> TESTE FALHOU: FALHA AO CRIAR UNIDADE DE TESTE: " + e.getMessage());
-                e.printStackTrace(); // Imprime o stack trace completo do erro
-            }
-        }
     }
 }

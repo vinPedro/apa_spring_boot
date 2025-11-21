@@ -70,13 +70,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/pacientes").permitAll() 
                         
                         // O resto (GET, PUT, DELETE) continua protegido
-                        .requestMatchers("/api/pacientes/**").hasRole("ADMIN") 
-                        // --- FIM DA MUDANÇA ---
+                        .requestMatchers("/api/pacientes/**").hasRole("ADMIN")
 
                         .requestMatchers("/api/profissionais/**").hasRole("ADMIN")
                         .requestMatchers("/api/unidades/**").hasRole("ADMIN")
                         .requestMatchers("/api/especialidades/**").hasRole("ADMIN")
                         .requestMatchers("/api/admins/**").hasRole("ADMIN")
+
+                        .requestMatchers("/api/atendimentos/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )
