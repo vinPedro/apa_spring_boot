@@ -29,6 +29,16 @@ public class ProfissionalController {
         return ResponseEntity.ok(profissional);
     }
 
+    // Endpoint: GET /api/profissionais/buscar?tipo=NOME&termo=João
+    @GetMapping("/buscar")
+    public ResponseEntity<List<ProfissionalResponseDTO>> buscar(
+            @RequestParam String tipo,
+            @RequestParam String termo) {
+
+        List<ProfissionalResponseDTO> resultados = profissionalService.buscarPorTipo(tipo, termo);
+        return ResponseEntity.ok(resultados);
+    }
+
     @GetMapping
     public ResponseEntity<List<ProfissionalResponseDTO>> listarTodosProfissionais() {
         List<ProfissionalResponseDTO> profissionais = profissionalService.listarTodos();

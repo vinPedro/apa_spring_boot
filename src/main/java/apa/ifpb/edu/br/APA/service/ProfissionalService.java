@@ -118,6 +118,38 @@ public class ProfissionalService {
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Unidade de Saúde não encontrada com ID: " + id));
     }
 
+    @Transactional(readOnly = true)
+    public List<ProfissionalResponseDTO> buscarPorTipo(String tipo, String termo) {
+        List<Profissional> profissionais;
+
+        if (termo == null || termo.isBlank()) {
+            return listarTodos();
+        }
+
+        switch (tipo.toUpperCase()) {
+            case "NOME":
+                profissionais = profissionalRepository.findByNomeCompletoContainingIgnoreCase(termo);
+                break;
+            case "CPF":
+                // Remove pontos e traços se o front mandar formatado
+                String cpfLimpo = termo.replaceAll("\\D", "");
+                profissionais = profissionalRepository.findByCpfContaining(cpfLimpo);
+                break;
+            case "CNS":
+                // Remove qualquer caractere não numérico
+                String cnsLimpo = termo.replaceAll("\\D", "");
+                profissionais = profissionalRepository.findByCnsContaining(cnsLimpo);
+                break;
+            default:
+                // Se mandar um tipo inválido, retorna lista vazia ou lança erro
+                return List.of();
+        }
+
+        return profissionais.stream()
+                .map(profissionalMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
     private void validarCpfCnsEmail(String cpf, String cns, String email, Long profissionalId) {
         profissionalRepository.findByCpf(cpf).ifPresent(p -> {
             if (profissionalId == null || !p.getId().equals(profissionalId)) {
