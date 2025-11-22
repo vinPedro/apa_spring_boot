@@ -122,6 +122,37 @@ public class PacienteService {
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Unidade de Saúde não encontrada com ID: " + id));
     }
 
+    @Transactional(readOnly = true)
+    public List<PacienteResponseDTO> buscarPorTipo(String tipo, String termo) {
+        List<Paciente> pacientes;
+
+        if (termo == null || termo.isBlank()) {
+            return listarTodos();
+        }
+
+        switch (tipo.toUpperCase()) {
+            case "NOME":
+                pacientes = pacienteRepository.findByNomeCompletoContainingIgnoreCase(termo);
+                break;
+            case "CPF":
+                // Remove pontuação se vier do front
+                String cpfLimpo = termo.replaceAll("\\D", "");
+                pacientes = pacienteRepository.findByCpfContaining(cpfLimpo);
+                break;
+            case "CNS":
+                // Remove pontuação se vier do front
+                String cnsLimpo = termo.replaceAll("\\D", "");
+                pacientes = pacienteRepository.findByCnsContaining(cnsLimpo);
+                break;
+            default:
+                return List.of(); // Retorna vazio se o tipo for inválido
+        }
+
+        return pacientes.stream()
+                .map(pacienteMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
     private void validarCpfECns(String cpf, String cns, Long pacienteId) {
         pacienteRepository.findByCpf(cpf).ifPresent(paciente -> {
             if (pacienteId == null || !paciente.getId().equals(pacienteId)) {

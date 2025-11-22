@@ -29,6 +29,15 @@ public class PacienteController {
         return ResponseEntity.ok(paciente);
     }
 
+    // Endpoint: GET /api/pacientes/buscar?tipo=NOME&termo=Maria
+    @GetMapping("/buscar")
+    public ResponseEntity<List<PacienteResponseDTO>> buscar(
+            @RequestParam String tipo,
+            @RequestParam String termo) {
+
+        List<PacienteResponseDTO> resultados = pacienteService.buscarPorTipo(tipo, termo);
+        return ResponseEntity.ok(resultados);
+    }
 
     @GetMapping
     public ResponseEntity<List<PacienteResponseDTO>> listarTodosPacientes() {
