@@ -30,24 +30,28 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        // --- Bloco 1: Criar Admin (como antes) ---
-        if (usuarioRepository.findByLogin("admin").isEmpty()) {
+        /**
+         * --- Bloco 1: Criar Admin (como antes) ---
+         *         if (usuarioRepository.findByLogin("admin").isEmpty()) {
+         *
+         *             Usuario adminUser = new Usuario();
+         *             adminUser.setLogin("admin");
+         *             adminUser.setSenha(passwordEncoder.encode("admin123"));
+         *             adminUser.setRole(Role.ROLE_ADMIN);
+         *
+         *             Admin adminProfile = new Admin();
+         *             adminProfile.setUsuario(adminUser);
+         *
+         *             adminRepository.save(adminProfile);
+         *
+         *             System.out.println("**************************************************");
+         *             System.out.println(">>> USUÁRIO ADMIN PADRÃO CRIADO COM SUCESSO <<<");
+         *             System.out.println(">>> Login: admin / Senha: admin123           <<<");
+         *             System.out.println("**************************************************");
+         *         }
+         *
+         */
 
-            Usuario adminUser = new Usuario();
-            adminUser.setLogin("admin");
-            adminUser.setSenha(passwordEncoder.encode("admin123"));
-            adminUser.setRole(Role.ROLE_ADMIN);
-
-            Admin adminProfile = new Admin();
-            adminProfile.setUsuario(adminUser);
-
-            adminRepository.save(adminProfile);
-
-            System.out.println("**************************************************");
-            System.out.println(">>> USUÁRIO ADMIN PADRÃO CRIADO COM SUCESSO <<<");
-            System.out.println(">>> Login: admin / Senha: admin123           <<<");
-            System.out.println("**************************************************");
-        }
-
+        System.out.println(">>> Aplicação Inicializada <<<");
     }
 }

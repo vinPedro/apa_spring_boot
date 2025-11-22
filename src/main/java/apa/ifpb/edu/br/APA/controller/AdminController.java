@@ -1,13 +1,13 @@
 package apa.ifpb.edu.br.APA.controller;
 
+import apa.ifpb.edu.br.APA.dto.AdminRequestDTO;
 import apa.ifpb.edu.br.APA.dto.AdminResponseDTO;
 import apa.ifpb.edu.br.APA.service.AdminService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,8 +17,15 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
-    //Endpoint responsavel por listar todos os adm.
 
+    //Endpoint responsavel por criar um novo adm
+    @PostMapping
+    public ResponseEntity<AdminResponseDTO> criarNovoAdmin(@RequestBody @Valid AdminRequestDTO dto) {
+        AdminResponseDTO novoAdmin = adminService.criarAdmin(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novoAdmin);
+    }
+
+    //Endpoint responsavel por listar todos os adm.
     @GetMapping
     public ResponseEntity<List<AdminResponseDTO>> listarTodosAdmins() {
         List<AdminResponseDTO> admins = adminService.listarTodos();

@@ -65,6 +65,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/api/setup/**").permitAll()
                         
                         // Permite que QUALQUER UM crie um novo paciente (cadastro público)
                         .requestMatchers(HttpMethod.POST, "/api/pacientes").permitAll() 
