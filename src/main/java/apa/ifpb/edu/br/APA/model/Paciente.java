@@ -55,9 +55,12 @@ public class Paciente {
     private Usuario usuario;
 
     @Column(nullable = false)
+    private String cep;
+
+    @Column
     private String logradouro;
 
-    @Column(nullable = false)
+    @Column
     private String bairro;
 
     @Column(nullable = false)

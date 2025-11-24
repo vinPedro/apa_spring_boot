@@ -1,6 +1,8 @@
 package apa.ifpb.edu.br.APA.service;
 
+import apa.ifpb.edu.br.APA.cliente.ViaCEPCliente;
 import apa.ifpb.edu.br.APA.dto.UnidadeSaudeDTO;
+import apa.ifpb.edu.br.APA.dto.ViaCEPResponseDTO;
 import apa.ifpb.edu.br.APA.exception.OperacaoInvalidaException;
 import apa.ifpb.edu.br.APA.exception.RecursoJaExisteException;
 import apa.ifpb.edu.br.APA.exception.RecursoNaoEncontradoException;
@@ -23,6 +25,7 @@ public class UnidadeSaudeService {
 
     private final UnidadeSaudeRepository unidadeSaudeRepository;
     private final UnidadeSaudeMapper unidadeSaudeMapper;
+    private final ViaCEPCliente viaCEPCliente;
     @Autowired
     private ProfissionalRepository profissionalRepository;
     @Autowired
@@ -57,6 +60,14 @@ public class UnidadeSaudeService {
         });
 
         UnidadeSaude unidade = unidadeSaudeMapper.toUnidadeSaude(dto);
+
+        ViaCEPResponseDTO endereco = viaCEPCliente.buscarCEP(dto.getCep());
+        unidade.setLogradouro(endereco.getLogradouro());
+        unidade.setBairro(endereco.getBairro());
+        unidade.setMunicipio(endereco.getLocalidade());
+        unidade.setUf(endereco.getUf());
+        unidade.setCep(endereco.getCep());
+
         UnidadeSaude salva = unidadeSaudeRepository.save(unidade);
         return unidadeSaudeMapper.toDTO(salva);
     }
@@ -77,6 +88,13 @@ public class UnidadeSaudeService {
                 throw new RecursoJaExisteException("Já existe outra unidade com o CNPJ: " + dto.getCnpj());
             });
         }
+
+        ViaCEPResponseDTO endereco = viaCEPCliente.buscarCEP(dto.getCep());
+        unidade.setLogradouro(endereco.getLogradouro());
+        unidade.setBairro(endereco.getBairro());
+        unidade.setMunicipio(endereco.getLocalidade());
+        unidade.setUf(endereco.getUf());
+        unidade.setCep(endereco.getCep());
 
         unidadeSaudeMapper.updateFromDto(dto, unidade);
         UnidadeSaude atualizada = unidadeSaudeRepository.save(unidade);

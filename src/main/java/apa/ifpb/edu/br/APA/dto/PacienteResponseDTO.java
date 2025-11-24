@@ -23,6 +23,7 @@ public class PacienteResponseDTO {
     private String bairro;
     private String municipio;
     private String uf;
+    private String cep;
 
     private Long unidadeSaudeId;
 

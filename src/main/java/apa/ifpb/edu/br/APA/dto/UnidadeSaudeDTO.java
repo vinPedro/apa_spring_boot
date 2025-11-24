@@ -21,10 +21,8 @@ public class UnidadeSaudeDTO {
     @NotBlank(message = "O Nome não pode estar em branco")
     private String nome;
 
-    @NotBlank(message = "O Logradouro não pode estar em branco")
     private String logradouro;
 
-    @NotBlank(message = "O Bairro não pode estar em branco")
     private String bairro;
 
     @NotBlank(message = "O Município não pode estar em branco")
@@ -32,4 +30,7 @@ public class UnidadeSaudeDTO {
 
     @NotBlank(message = "A UF não pode estar em branco")
     private String uf;
+
+    @NotBlank(message = "O cep não pode estar em branco")
+    private String cep;
 }
