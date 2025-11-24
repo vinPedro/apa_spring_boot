@@ -18,6 +18,7 @@ public class PacienteRequestDTO {
     private String telefone;
     private String email;
 
+    private String cep;
     private String logradouro;
     private String bairro;
     private String municipio;

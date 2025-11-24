@@ -1,7 +1,9 @@
 package apa.ifpb.edu.br.APA.service;
 
+import apa.ifpb.edu.br.APA.cliente.ViaCEPCliente;
 import apa.ifpb.edu.br.APA.dto.PacienteRequestDTO;
 import apa.ifpb.edu.br.APA.dto.PacienteResponseDTO;
+import apa.ifpb.edu.br.APA.dto.ViaCEPResponseDTO;
 import apa.ifpb.edu.br.APA.exception.OperacaoInvalidaException;
 import apa.ifpb.edu.br.APA.exception.RecursoNaoEncontradoException;
 import apa.ifpb.edu.br.APA.mapper.PacienteMapper;
@@ -28,6 +30,7 @@ public class PacienteService {
     private final PacienteMapper pacienteMapper;
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ViaCEPCliente viaCEPCliente;
 
     @Transactional
     public PacienteResponseDTO criarPaciente(PacienteRequestDTO dto) {
@@ -53,6 +56,13 @@ public class PacienteService {
         );
 
         paciente.setUsuario(novoUsuario);
+
+        ViaCEPResponseDTO endereco = viaCEPCliente.buscarCEP(dto.getCep());
+        paciente.setLogradouro(endereco.getLogradouro());
+        paciente.setBairro(endereco.getBairro());
+        paciente.setMunicipio(endereco.getLocalidade());
+        paciente.setUf(endereco.getUf());
+        paciente.setCep(endereco.getCep());
 
         Paciente pacienteSalvo = pacienteRepository.save(paciente);
         return pacienteMapper.toResponseDTO(pacienteSalvo);
@@ -99,6 +109,13 @@ public class PacienteService {
             pacienteExistente.setUnidadeSaudeVinculada(novaUbs);
         }
 
+
+        ViaCEPResponseDTO endereco = viaCEPCliente.buscarCEP(dto.getCep());
+        pacienteExistente.setLogradouro(endereco.getLogradouro());
+        pacienteExistente.setBairro(endereco.getBairro());
+        pacienteExistente.setMunicipio(endereco.getLocalidade());
+        pacienteExistente.setUf(endereco.getUf());
+        pacienteExistente.setCep(endereco.getCep());
 
         Paciente pacienteAtualizado = pacienteRepository.save(pacienteExistente);
 

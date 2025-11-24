@@ -24,10 +24,14 @@ public class UnidadeSaude {
     @Column(nullable = false)
     private String nome;
 
-    @Column(nullable = false)
-    private String logradouro;
 
     @Column(nullable = false)
+    private String cep;
+
+    @Column
+    private String logradouro;
+
+    @Column
     private String bairro;
 
     @Column(nullable = false)

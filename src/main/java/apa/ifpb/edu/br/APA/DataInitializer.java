@@ -63,12 +63,13 @@ public class DataInitializer implements CommandLineRunner {
         if (unidadeExistente.isEmpty()) {
             UnidadeSaudeDTO dto = new UnidadeSaudeDTO();
             dto.setCodigoCnes("0000000");
+            dto.setCep("58540000");
             dto.setCnpj("99999999000199");
             dto.setNome("PSF DE TESTE AUTOMATICO");
-            dto.setLogradouro("Rua do Teste");
+            /*dto.setLogradouro("Rua do Teste");
             dto.setBairro("Bairro Teste");
             dto.setMunicipio("Cidade Teste");
-            dto.setUf("PB");
+            dto.setUf("PB");*/
 
             UnidadeSaudeDTO salva = unidadeSaudeService.criarUnidade(dto);
             unidadeId = salva.getId();
@@ -113,16 +114,17 @@ public class DataInitializer implements CommandLineRunner {
             PacienteRequestDTO pacDto = new PacienteRequestDTO();
             pacDto.setNomeCompleto("Paciente Exemplo da Silva");
             pacDto.setCpf("");
+            pacDto.setCep("58540000");
             pacDto.setCns("200000000000002");
             pacDto.setDataNascimento(LocalDate.of(1990, 1, 1));
             pacDto.setSexo(Sexo.MASCULINO);
             pacDto.setRacacor(RacaCor.PARDA);
             pacDto.setTelefone("83988887777");
             pacDto.setEmail(emailPaciente);
-            pacDto.setLogradouro("Rua dos Pacientes, 100");
+            /*pacDto.setLogradouro("Rua dos Pacientes, 100");
             pacDto.setBairro("Centro");
             pacDto.setMunicipio("Cidade Teste");
-            pacDto.setUf("PB");
+            pacDto.setUf("PB");*/
             pacDto.setSenha("paciente123"); // Senha do paciente
             pacDto.setUnidadeSaudeId(unidadeId); // Vincula à unidade criada acima
 
