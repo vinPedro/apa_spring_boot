@@ -136,4 +136,5 @@ public class DataInitializer implements CommandLineRunner {
 
         System.out.println(">>> DATA INITIALIZER CONCLUÍDO <<<");
     }
+    
 }
