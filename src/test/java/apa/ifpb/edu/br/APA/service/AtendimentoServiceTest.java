@@ -64,7 +64,7 @@ class AtendimentoServiceTest {
         when(atendimentoMapper.toResponseDTO(any())).thenReturn(new AtendimentoResponseDTO());
 
         atendimentoService.entrarNaFila(dto);
-        assertEquals("P1", atendimentoMock.getSenha()); // Verifica a lógica da senha
+        assertEquals("P1", atendimentoMock.getSenha());
         assertEquals(StatusAtendimento.AGUARDANDO, atendimentoMock.getStatus());
         verify(atendimentoRepository).save(atendimentoMock);
     }
