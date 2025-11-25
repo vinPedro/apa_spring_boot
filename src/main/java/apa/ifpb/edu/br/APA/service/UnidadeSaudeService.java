@@ -26,10 +26,10 @@ public class UnidadeSaudeService {
     private final UnidadeSaudeRepository unidadeSaudeRepository;
     private final UnidadeSaudeMapper unidadeSaudeMapper;
     private final ViaCEPCliente viaCEPCliente;
-    @Autowired
-    private ProfissionalRepository profissionalRepository;
-    @Autowired
-    private PacienteRepository pacienteRepository;
+
+    private final ProfissionalRepository profissionalRepository;
+
+    private final PacienteRepository pacienteRepository;
 
     // Busca todas as unidades no banco e as converte para DTO.
     @Transactional(readOnly = true)
