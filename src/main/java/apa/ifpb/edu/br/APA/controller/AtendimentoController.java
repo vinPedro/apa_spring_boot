@@ -6,6 +6,9 @@ import apa.ifpb.edu.br.APA.dto.AtendimentoResponseDTO;
 import apa.ifpb.edu.br.APA.service.AtendimentoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,5 +26,11 @@ public class AtendimentoController {
     public ResponseEntity<AtendimentoResponseDTO> entrarNaFila(@RequestBody @Valid AtendimentoRequestDTO dto) {
         AtendimentoResponseDTO novoAtendimento = atendimentoService.entrarNaFila(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoAtendimento);
+    }
+    
+    @GetMapping("/fila/{unidadeId}")
+    public ResponseEntity<List<AtendimentoResponseDTO>> listarFila(@PathVariable Long unidadeId) {
+        List<AtendimentoResponseDTO> fila = atendimentoService.listarFilaPorUnidade(unidadeId);
+        return ResponseEntity.ok(fila);
     }
 }

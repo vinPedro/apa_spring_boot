@@ -1,4 +1,3 @@
-// Caminho: src/main/java/apa/ifpb/edu/br/APA/service/AtendimentoService.java
 package apa.ifpb.edu.br.APA.service;
 
 import apa.ifpb.edu.br.APA.dto.AtendimentoRequestDTO;
@@ -15,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -62,5 +63,16 @@ public class AtendimentoService {
 
         // 5. Retorna o DTO de resposta
         return atendimentoMapper.toResponseDTO(salvo);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AtendimentoResponseDTO> listarFilaPorUnidade(Long unidadeId) {
+        // Busca atendimentos da unidade com status AGUARDANDO
+        // Atenção: Certifique-se que o método findByUnidadeSaudeIdAndStatus aceita StatusAtendimento (Enum) ou String no Repository
+        List<Atendimento> atendimentos = atendimentoRepository.findByUnidadeSaudeIdAndStatus(unidadeId, StatusAtendimento.AGUARDANDO);
+        
+        return atendimentos.stream()
+                .map(atendimentoMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
 }

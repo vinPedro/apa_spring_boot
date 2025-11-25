@@ -40,18 +40,7 @@ public class DataInitializer implements CommandLineRunner {
         // ---------------------------------------------------------
         // 1. SETUP ADMIN
         // ---------------------------------------------------------
-        if (usuarioRepository.findByLogin("admin").isEmpty()) {
-            Usuario adminUser = new Usuario();
-            adminUser.setLogin("admin");
-            adminUser.setSenha(passwordEncoder.encode("admin123"));
-            adminUser.setRole(Role.ROLE_ADMIN);
-
-            Admin adminProfile = new Admin();
-            adminProfile.setUsuario(adminUser);
-            adminRepository.save(adminProfile);
-
-            System.out.println(" > Admin criado: Login 'admin' / Senha 'admin123'");
-        }
+       
 
         // ---------------------------------------------------------
         // 2. SETUP UNIDADE DE SAÚDE (PSF)
