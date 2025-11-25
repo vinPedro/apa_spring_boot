@@ -66,16 +66,23 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/setup/**").permitAll()
-                        
-                        // Permite que QUALQUER UM crie um novo paciente (cadastro público)
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+
+
                         .requestMatchers(HttpMethod.POST, "/api/pacientes").permitAll() 
-                        
-                        // O resto (GET, PUT, DELETE) continua protegido
+
                         .requestMatchers("/api/pacientes/**").hasRole("ADMIN")
 
                         .requestMatchers("/api/profissionais/**").hasRole("ADMIN")
+
                         .requestMatchers("/api/unidades/**").hasRole("ADMIN")
+
                         .requestMatchers("/api/especialidades/**").hasRole("ADMIN")
+
                         .requestMatchers("/api/admins/**").hasRole("ADMIN")
 
                         .requestMatchers("/api/atendimentos/**").hasRole("ADMIN")
