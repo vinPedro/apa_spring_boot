@@ -72,7 +72,7 @@ public class DataInitializer implements CommandLineRunner {
         // 3. SETUP PROFISSIONAL
         // ---------------------------------------------------------
         // O login do profissional é o CPF. Vamos usar um CPF de teste.
-        String cpfProfissional = "";
+        String cpfProfissional = "02902248458";
         if (usuarioRepository.findByLogin(cpfProfissional).isEmpty()) {
             ProfissionalRequestDTO proDto = new ProfissionalRequestDTO();
             proDto.setNomeCompleto("Dr. Médico de Teste");
@@ -102,7 +102,7 @@ public class DataInitializer implements CommandLineRunner {
         if (usuarioRepository.findByLogin(emailPaciente).isEmpty()) {
             PacienteRequestDTO pacDto = new PacienteRequestDTO();
             pacDto.setNomeCompleto("Paciente Exemplo da Silva");
-            pacDto.setCpf("");
+            pacDto.setCpf("28551036491");
             pacDto.setCep("58540000");
             pacDto.setCns("200000000000002");
             pacDto.setDataNascimento(LocalDate.of(1990, 1, 1));

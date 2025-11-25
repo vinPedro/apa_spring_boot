@@ -84,11 +84,24 @@ public class SecurityConfig {
                         // GET: Paciente precisa buscar seus dados (pelo email na lista)
                         .requestMatchers(HttpMethod.GET, "/api/pacientes/**").authenticated()
                         // PUT/DELETE: Admin ou o próprio (implementar segurança a nível de método futuramente)
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+
+
+                        .requestMatchers(HttpMethod.POST, "/api/pacientes").permitAll() 
+
                         .requestMatchers("/api/pacientes/**").hasRole("ADMIN")
 
                         // --- OUTRAS ROTAS ---
                         .requestMatchers("/api/profissionais/**").hasRole("ADMIN")
+
+                        .requestMatchers("/api/unidades/**").hasRole("ADMIN")
+
                         .requestMatchers("/api/especialidades/**").hasRole("ADMIN")
+
                         .requestMatchers("/api/admins/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
