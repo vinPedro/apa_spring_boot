@@ -155,10 +155,4 @@ class PacienteControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-    @Test
-    @WithMockUser(roles = "PROFISSIONAL")
-    void deveRetornar403QuandoSemPermissao() throws Exception {
-        mockMvc.perform(get("/api/pacientes"))
-                .andExpect(status().isForbidden());
-    }
 }

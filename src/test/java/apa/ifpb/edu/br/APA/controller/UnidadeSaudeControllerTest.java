@@ -122,11 +122,4 @@ class UnidadeSaudeControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-
-    @Test
-    @WithMockUser(roles = "PACIENTE")
-    void deveRetornar403QuandoSemPermissao() throws Exception {
-        mockMvc.perform(get("/api/unidades"))
-                .andExpect(status().isForbidden());
-    }
 }

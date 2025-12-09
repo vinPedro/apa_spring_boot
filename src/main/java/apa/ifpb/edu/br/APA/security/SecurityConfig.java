@@ -80,6 +80,8 @@ public class SecurityConfig {
                         // PATCH: Profissional chama o paciente (altera status)
                         .requestMatchers(HttpMethod.PATCH, "/api/atendimentos/**").hasAnyRole("PROFISSIONAL", "ADMIN")
 
+                        .requestMatchers("/api/fichamentos/**").hasAnyRole("ADMIN", "PROFISSIONAL")
+
                         // --- ROTAS DE PACIENTES ---
                         // GET: Paciente precisa buscar seus dados (pelo email na lista)
                         .requestMatchers(HttpMethod.GET, "/api/pacientes/**").authenticated()
