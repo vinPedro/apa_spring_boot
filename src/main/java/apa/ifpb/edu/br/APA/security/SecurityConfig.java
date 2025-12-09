@@ -82,6 +82,8 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/fichamentos/**").hasAnyRole("ADMIN", "PROFISSIONAL")
 
+                        .requestMatchers("/api/prontuarios/**").hasAnyRole("ADMIN", "PROFISSIONAL")
+
                         // --- ROTAS DE PACIENTES ---
                         // GET: Paciente precisa buscar seus dados (pelo email na lista)
                         .requestMatchers(HttpMethod.GET, "/api/pacientes/**").authenticated()
