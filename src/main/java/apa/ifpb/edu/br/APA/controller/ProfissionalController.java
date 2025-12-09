@@ -1,5 +1,6 @@
 package apa.ifpb.edu.br.APA.controller;
 
+import apa.ifpb.edu.br.APA.dto.DisponibilidadeDTO;
 import apa.ifpb.edu.br.APA.dto.ProfissionalRequestDTO;
 import apa.ifpb.edu.br.APA.dto.ProfissionalResponseDTO;
 import apa.ifpb.edu.br.APA.service.ProfissionalService;
@@ -51,6 +52,15 @@ public class ProfissionalController {
             @RequestBody ProfissionalRequestDTO dto) {
 
         ProfissionalResponseDTO atualizado = profissionalService.atualizarProfissional(id, dto);
+        return ResponseEntity.ok(atualizado);
+    }
+
+    @PutMapping("/{id}/disponibilidade")
+    public ResponseEntity<ProfissionalResponseDTO> atualizarDisponibilidade(
+            @PathVariable Long id,
+            @RequestBody DisponibilidadeDTO dto) {
+
+        ProfissionalResponseDTO atualizado = profissionalService.atualizarDisponibilidade(id, dto);
         return ResponseEntity.ok(atualizado);
     }
 

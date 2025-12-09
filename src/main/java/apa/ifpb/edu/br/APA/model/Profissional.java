@@ -1,14 +1,14 @@
 package apa.ifpb.edu.br.APA.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-// Importe a validação de CPF (provavelmente do hibernate-validator,
-// assim como na sua entidade Paciente)
-import org.hibernate.validator.constraints.br.CPF;
-
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import org.hibernate.validator.constraints.br.CPF;
+import jakarta.validation.constraints.Email;
+
+import java.time.LocalTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "profissional", uniqueConstraints = {
@@ -58,4 +58,17 @@ public class Profissional {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id", referencedColumnName = "id")
     private Usuario usuario;
+
+    @ElementCollection(targetClass = DiaSemana.class, fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "profissional_dias_trabalho", joinColumns = @JoinColumn(name = "profissional_id"))
+    @Column(name = "dia_semana")
+    private Set<DiaSemana> diasTrabalho;
+
+    private LocalTime horaInicio;
+
+    private LocalTime horaFim;
+
+    @Column(nullable = false)
+    private boolean disponivelAtualmente = false;
 }
