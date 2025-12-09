@@ -19,7 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static apa.ifpb.edu.br.APA.model.StatusAtendimento.AGUARDANDO;
+import static apa.ifpb.edu.br.APA.model.StatusAtendimento.PRONTO_PARA_CONSULTA;
 
 @Service
 @RequiredArgsConstructor
@@ -61,7 +65,7 @@ public class AtendimentoService {
         atendimento.setUnidadeSaude(unidade);
         atendimento.setSenha(senhaGerada);
         atendimento.setDataHoraChegada(LocalDateTime.now());
-        atendimento.setStatus(StatusAtendimento.AGUARDANDO); // Status inicial
+        atendimento.setStatus(AGUARDANDO); // Status inicial
 
         // 4. Salva no banco
         Atendimento salvo = atendimentoRepository.save(atendimento);
@@ -74,7 +78,7 @@ public class AtendimentoService {
     public List<AtendimentoResponseDTO> listarFilaPorUnidade(Long unidadeId) {
         // Busca atendimentos da unidade com status AGUARDANDO
         // Atenção: Certifique-se que o método findByUnidadeSaudeIdAndStatus aceita StatusAtendimento (Enum) ou String no Repository
-        List<Atendimento> atendimentos = atendimentoRepository.findByUnidadeSaudeIdAndStatus(unidadeId, StatusAtendimento.AGUARDANDO);
+        List<Atendimento> atendimentos = atendimentoRepository.findByUnidadeSaudeIdAndStatus(unidadeId, AGUARDANDO);
         
         return atendimentos.stream()
                 .map(atendimentoMapper::toResponseDTO)
@@ -161,5 +165,34 @@ public class AtendimentoService {
         }
 
         return dto;
+    }
+
+    @Transactional
+    public void chamarProxima(Long unidadeId) {
+
+        // 1. Busca o primeiro paciente na fila que está no status 'AGUARDANDO'
+        // Utilizamos o método de busca que você já tem no Repository, que ordena corretamente.
+        Optional<Atendimento> proximoAtendimento = atendimentoRepository
+                .findFirstByUnidadeSaudeIdAndStatusOrderByPrioridadeDescDataHoraChegadaAsc(
+                        unidadeId,
+                        AGUARDANDO
+                );
+
+        if (proximoAtendimento.isEmpty()) {
+            // Não há pacientes aguardando para serem chamados.
+            throw new RecursoNaoEncontradoException("Não há pacientes aguardando na fila para a unidade ID: " + unidadeId);
+        }
+
+        // 2. Atualiza o Atendimento
+        Atendimento atendimento = proximoAtendimento.get();
+
+
+        atendimento.setDataHoraChamada(LocalDateTime.now());
+
+        // Move o paciente para o status de 'sendo chamado na recepção'
+        atendimento.setStatus(PRONTO_PARA_CONSULTA);
+
+        // 3. Salva no banco (o JPA/Hibernate fará a atualização)
+        atendimentoRepository.save(atendimento);
     }
 }

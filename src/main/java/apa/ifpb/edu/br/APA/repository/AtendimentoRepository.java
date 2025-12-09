@@ -15,6 +15,8 @@ import java.util.Optional;
 @Repository
 public interface AtendimentoRepository extends JpaRepository<Atendimento, Long> {
 
+
+
     // Conta quantos atendimentos de um tipo (P ou PR) existem numa unidade a partir de uma data (hoje)
     @Query("SELECT COUNT(a) FROM Atendimento a WHERE a.unidadeSaude.id = :unidadeId AND a.prioridade = :prioridade AND a.dataHoraChegada >= :inicioDia")
     Long contarAtendimentosDoDia(Long unidadeId, TipoPrioridade prioridade, LocalDateTime inicioDia);
@@ -51,4 +53,6 @@ public interface AtendimentoRepository extends JpaRepository<Atendimento, Long> 
             "AND a.dataHoraChamada IS NOT NULL " +
             "ORDER BY a.dataHoraChamada DESC")
     List<Atendimento> buscarUltimosChamados(Long unidadeId, Pageable pageable);
+
+
 }
