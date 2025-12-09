@@ -1,5 +1,6 @@
 package apa.ifpb.edu.br.APA.service;
 
+import apa.ifpb.edu.br.APA.dto.DisponibilidadeDTO;
 import apa.ifpb.edu.br.APA.dto.ProfissionalRequestDTO;
 import apa.ifpb.edu.br.APA.dto.ProfissionalResponseDTO;
 import apa.ifpb.edu.br.APA.exception.OperacaoInvalidaException;
@@ -168,5 +169,26 @@ public class ProfissionalService {
                 throw new OperacaoInvalidaException("Email institucional já cadastrado para outro profissional.");
             }
         });
+    }
+
+    @Transactional
+    public ProfissionalResponseDTO atualizarDisponibilidade(Long id, DisponibilidadeDTO dto) {
+        Profissional profissional = buscarProfissionalExistente(id);
+
+        if (dto.getDiasTrabalho() != null) {
+            profissional.setDiasTrabalho(dto.getDiasTrabalho());
+        }
+        if (dto.getHoraInicio() != null) {
+            profissional.setHoraInicio(dto.getHoraInicio());
+        }
+        if (dto.getHoraFim() != null) {
+            profissional.setHoraFim(dto.getHoraFim());
+        }
+        if (dto.getDisponivelAtualmente() != null) {
+            profissional.setDisponivelAtualmente(dto.getDisponivelAtualmente());
+        }
+
+        Profissional atualizado = profissionalRepository.save(profissional);
+        return profissionalMapper.toResponseDTO(atualizado);
     }
 }
