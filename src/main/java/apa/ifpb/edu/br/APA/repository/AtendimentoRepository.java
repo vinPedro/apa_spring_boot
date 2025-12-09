@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AtendimentoRepository extends JpaRepository<Atendimento, Long> {
@@ -35,4 +36,10 @@ public interface AtendimentoRepository extends JpaRepository<Atendimento, Long> 
             "ORDER BY a.prioridade DESC, a.dataHoraChegada ASC")
     List<Atendimento> buscarFilaPorStatus(
             Long unidadeId, StatusAtendimento status, LocalDateTime inicio, LocalDateTime fim);
+
+
+    // Busca o PRIMEIRO paciente que está PRONTO_PARA_CONSULTA
+    // Ordena: 1º Quem é PRIORIDADE, 2º Quem chegou primeiro
+    Optional<Atendimento> findFirstByUnidadeSaudeIdAndStatusOrderByPrioridadeDescDataHoraChegadaAsc(
+            Long unidadeId, StatusAtendimento status);
 }

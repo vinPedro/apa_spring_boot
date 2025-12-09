@@ -2,11 +2,13 @@ package apa.ifpb.edu.br.APA.service;
 
 import apa.ifpb.edu.br.APA.dto.AtendimentoRequestDTO;
 import apa.ifpb.edu.br.APA.dto.AtendimentoResponseDTO;
+import apa.ifpb.edu.br.APA.dto.ChamarPacienteDTO;
 import apa.ifpb.edu.br.APA.exception.RecursoNaoEncontradoException;
 import apa.ifpb.edu.br.APA.mapper.AtendimentoMapper;
 import apa.ifpb.edu.br.APA.model.*;
 import apa.ifpb.edu.br.APA.repository.AtendimentoRepository;
 import apa.ifpb.edu.br.APA.repository.PacienteRepository;
+import apa.ifpb.edu.br.APA.repository.ProfissionalRepository;
 import apa.ifpb.edu.br.APA.repository.UnidadeSaudeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class AtendimentoService {
     private final AtendimentoRepository atendimentoRepository;
     private final PacienteRepository pacienteRepository;
     private final UnidadeSaudeRepository unidadeSaudeRepository;
+    private final ProfissionalRepository profissionalRepository;
     private final AtendimentoMapper atendimentoMapper;
 
     @Transactional
@@ -105,5 +108,29 @@ public class AtendimentoService {
         return lista.stream()
                 .map(atendimentoMapper::toResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public AtendimentoResponseDTO chamarProximoPaciente(ChamarPacienteDTO dto) {
+
+        // 1. Busca o próximo da fila (Regra: Prioridade > Chegada)
+        var proximoAtendimento = atendimentoRepository
+                .findFirstByUnidadeSaudeIdAndStatusOrderByPrioridadeDescDataHoraChegadaAsc(
+                        dto.getUnidadeSaudeId(),
+                        StatusAtendimento.PRONTO_PARA_CONSULTA
+                ).orElseThrow(() -> new RecursoNaoEncontradoException("Não há pacientes aguardando na fila para consulta."));
+
+        // 2. Busca o Médico que está chamando
+        Profissional medico = profissionalRepository.findById(dto.getMedicoId())
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Profissional não encontrado"));
+
+        // 3. Atualiza o Atendimento
+        proximoAtendimento.setStatus(StatusAtendimento.EM_CONSULTA);
+        proximoAtendimento.setMedico(medico);
+        proximoAtendimento.setDataHoraChamada(LocalDateTime.now()); // Marca a hora para o painel
+
+        // 4. Salva e Retorna
+        Atendimento salvo = atendimentoRepository.save(proximoAtendimento);
+        return atendimentoMapper.toResponseDTO(salvo);
     }
 }

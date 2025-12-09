@@ -40,4 +40,10 @@ public class Atendimento {
     @ManyToOne
     @JoinColumn(name = "unidade_saude_id", nullable = false)
     private UnidadeSaude unidadeSaude;
+
+    @ManyToOne
+    @JoinColumn(name = "medico_id")
+    private Profissional medico;
+
+    private LocalDateTime dataHoraChamada;
 }
