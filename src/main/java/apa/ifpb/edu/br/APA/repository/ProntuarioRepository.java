@@ -12,8 +12,6 @@ import java.util.Optional;
 @Repository
 public interface ProntuarioRepository extends JpaRepository<Prontuario, Long> {
 
-    Optional<Prontuario> findByAtendimentoId(Long atendimentoId);
-
     @Query("SELECT p FROM Prontuario p WHERE " +
             "(:cpfPaciente IS NULL OR p.atendimento.paciente.cpf = :cpfPaciente) AND " +
             "(:medicoId IS NULL OR p.atendimento.medico.id = :medicoId) AND " +
