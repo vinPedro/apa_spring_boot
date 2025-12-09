@@ -106,6 +106,8 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/admins/**").hasRole("ADMIN")
 
+                        .requestMatchers("/api/painel/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
 

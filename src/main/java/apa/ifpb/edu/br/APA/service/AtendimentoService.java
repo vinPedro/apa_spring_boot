@@ -3,6 +3,7 @@ package apa.ifpb.edu.br.APA.service;
 import apa.ifpb.edu.br.APA.dto.AtendimentoRequestDTO;
 import apa.ifpb.edu.br.APA.dto.AtendimentoResponseDTO;
 import apa.ifpb.edu.br.APA.dto.ChamarPacienteDTO;
+import apa.ifpb.edu.br.APA.dto.PainelResponseDTO;
 import apa.ifpb.edu.br.APA.exception.RecursoNaoEncontradoException;
 import apa.ifpb.edu.br.APA.mapper.AtendimentoMapper;
 import apa.ifpb.edu.br.APA.model.*;
@@ -11,6 +12,7 @@ import apa.ifpb.edu.br.APA.repository.PacienteRepository;
 import apa.ifpb.edu.br.APA.repository.ProfissionalRepository;
 import apa.ifpb.edu.br.APA.repository.UnidadeSaudeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -132,5 +134,32 @@ public class AtendimentoService {
         // 4. Salva e Retorna
         Atendimento salvo = atendimentoRepository.save(proximoAtendimento);
         return atendimentoMapper.toResponseDTO(salvo);
+    }
+
+    @Transactional(readOnly = true)
+    public PainelResponseDTO getDadosPainel(Long unidadeId) {
+        List<Atendimento> ultimos = atendimentoRepository.buscarUltimosChamados(unidadeId, PageRequest.of(0, 4));
+
+        PainelResponseDTO dto = new PainelResponseDTO();
+
+        if (!ultimos.isEmpty()) {
+            Atendimento atual = ultimos.get(0);
+
+            dto.setSenhaAtual(atual.getSenha());
+            dto.setGuiche(atual.getUnidadeSaude().getNome());
+
+            List<String> historico = ultimos.stream()
+                    .skip(1) // Pula o primeiro (que é o atual)
+                    .map(Atendimento::getSenha)
+                    .collect(Collectors.toList());
+
+            dto.setHistorico(historico);
+        } else {
+            dto.setSenhaAtual("---");
+            dto.setGuiche("Aguarde...");
+            dto.setHistorico(List.of());
+        }
+
+        return dto;
     }
 }

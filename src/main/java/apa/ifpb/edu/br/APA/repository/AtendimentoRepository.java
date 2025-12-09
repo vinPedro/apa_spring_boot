@@ -3,6 +3,7 @@ package apa.ifpb.edu.br.APA.repository;
 import apa.ifpb.edu.br.APA.model.Atendimento;
 import apa.ifpb.edu.br.APA.model.StatusAtendimento; // <-- Importante
 import apa.ifpb.edu.br.APA.model.TipoPrioridade;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -42,4 +43,12 @@ public interface AtendimentoRepository extends JpaRepository<Atendimento, Long> 
     // Ordena: 1º Quem é PRIORIDADE, 2º Quem chegou primeiro
     Optional<Atendimento> findFirstByUnidadeSaudeIdAndStatusOrderByPrioridadeDescDataHoraChegadaAsc(
             Long unidadeId, StatusAtendimento status);
+
+    // Busca os atendimentos que JÁ FORAM CHAMADOS (tem dataHoraChamada),
+    // ordenados do mais recente para o mais antigo.
+    @Query("SELECT a FROM Atendimento a " +
+            "WHERE a.unidadeSaude.id = :unidadeId " +
+            "AND a.dataHoraChamada IS NOT NULL " +
+            "ORDER BY a.dataHoraChamada DESC")
+    List<Atendimento> buscarUltimosChamados(Long unidadeId, Pageable pageable);
 }
