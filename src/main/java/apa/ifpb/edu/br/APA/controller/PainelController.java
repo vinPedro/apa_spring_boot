@@ -20,4 +20,10 @@ public class PainelController {
         PainelResponseDTO dados = atendimentoService.getDadosPainel(unidadeId);
         return ResponseEntity.ok(dados);
     }
+
+    @PostMapping("/proxima")
+    public ResponseEntity<PainelResponseDTO> chamarProximaSenha(@RequestParam Long unidadeId) {
+        atendimentoService.chamarProxima(unidadeId);
+        return ResponseEntity.ok().build();
+    }
 }
