@@ -100,7 +100,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/pacientes/**").hasRole("ADMIN")
 
                         // --- OUTRAS ROTAS ---
-                        .requestMatchers("/api/profissionais/**").hasRole("ADMIN")
+                        .requestMatchers("/api/profissionais/**").hasAnyRole("ADMIN", "PROFISSIONAL")
 
                         .requestMatchers("/api/unidades/**").hasRole("ADMIN")
 
