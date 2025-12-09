@@ -13,7 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,4 +56,22 @@ public class ProntuarioService {
 
         return prontuarioMapper.toDTO(salvo);
     }
+
+    @Transactional(readOnly = true)
+    public List<ProntuarioResponseDTO> buscarHistorico(String cpfPaciente, Long medicoId, LocalDate inicio, LocalDate fim) {
+
+        String cpfLimpo = null;
+        if (cpfPaciente != null && !cpfPaciente.isBlank()) {
+            cpfLimpo = cpfPaciente.replaceAll("\\D", "");
+        }
+
+        LocalDateTime dataInicio = (inicio != null) ? inicio.atStartOfDay() : null;
+        LocalDateTime dataFim = (fim != null) ? fim.atTime(23, 59, 59) : null;
+
+        return prontuarioRepository.buscarHistorico(cpfLimpo, medicoId, dataInicio, dataFim)
+                .stream()
+                .map(prontuarioMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
 }

@@ -17,5 +17,6 @@ public interface ProntuarioMapper {
     @Mapping(source = "atendimento.id", target = "atendimentoId")
     @Mapping(source = "atendimento.paciente.nomeCompleto", target = "nomePaciente")
     @Mapping(source = "atendimento.medico.nomeCompleto", target = "nomeMedico")
+    @Mapping(source = "atendimento.unidadeSaude.nome", target = "nomeUnidade")
     ProntuarioResponseDTO toDTO(Prontuario prontuario);
 }

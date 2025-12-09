@@ -9,6 +9,7 @@ public class ProntuarioResponseDTO {
     private Long atendimentoId;
     private String nomePaciente;
     private String nomeMedico;
+    private String nomeUnidade;
     private String diagnostico;
     private LocalDateTime dataHoraFinalizacao;
 }
