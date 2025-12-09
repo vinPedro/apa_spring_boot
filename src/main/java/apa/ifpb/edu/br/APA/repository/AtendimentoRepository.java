@@ -19,4 +19,20 @@ public interface AtendimentoRepository extends JpaRepository<Atendimento, Long> 
 
     // CORREÇÃO: Agora aceita StatusAtendimento (Enum) em vez de String
     List<Atendimento> findByUnidadeSaudeIdAndStatus(Long unidadeId, StatusAtendimento status);
+
+    // 1. Busca todos do dia (sem filtro de status)
+    // Ordenado por chegada (quem chegou primeiro aparece primeiro)
+    List<Atendimento> findByUnidadeSaudeIdAndDataHoraChegadaBetweenOrderByDataHoraChegadaAsc(
+            Long unidadeId, LocalDateTime inicio, LocalDateTime fim);
+
+    // 2. Busca do dia filtrando por status (ex: só quem está AGUARDANDO)
+    // Ordenado por Prioridade (PRIORIDADE vem antes de NORMAL) e depois por Chegada
+    // Isso já deixa a lista pronta visualmente para o médico/recepção
+    @Query("SELECT a FROM Atendimento a " +
+            "WHERE a.unidadeSaude.id = :unidadeId " +
+            "AND a.status = :status " +
+            "AND a.dataHoraChegada BETWEEN :inicio AND :fim " +
+            "ORDER BY a.prioridade DESC, a.dataHoraChegada ASC")
+    List<Atendimento> buscarFilaPorStatus(
+            Long unidadeId, StatusAtendimento status, LocalDateTime inicio, LocalDateTime fim);
 }

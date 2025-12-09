@@ -33,4 +33,14 @@ public class AtendimentoController {
         List<AtendimentoResponseDTO> fila = atendimentoService.listarFilaPorUnidade(unidadeId);
         return ResponseEntity.ok(fila);
     }
+
+    // GET /api/atendimentos?unidadeSaudeId=1&status=AGUARDANDO
+    @GetMapping
+    public ResponseEntity<List<AtendimentoResponseDTO>> listarFila(
+            @RequestParam Long unidadeSaudeId,
+            @RequestParam(required = false) String status) {
+
+        List<AtendimentoResponseDTO> fila = atendimentoService.listarFila(unidadeSaudeId, status);
+        return ResponseEntity.ok(fila);
+    }
 }

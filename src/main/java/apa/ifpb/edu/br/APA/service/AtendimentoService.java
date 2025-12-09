@@ -75,4 +75,35 @@ public class AtendimentoService {
                 .map(atendimentoMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public List<AtendimentoResponseDTO> listarFila(Long unidadeId, String statusString) {
+
+        // 1. Define o intervalo de tempo (O dia de HOJE completo)
+        LocalDateTime inicioDia = LocalDate.now().atStartOfDay(); // 00:00:00
+        LocalDateTime fimDia = LocalDate.now().atTime(23, 59, 59); // 23:59:59
+
+        List<Atendimento> lista;
+
+        // 2. Verifica se veio um filtro de status
+        if (statusString != null && !statusString.isBlank()) {
+            try {
+                // Converte String para Enum (ex: "AGUARDANDO" -> StatusAtendimento.AGUARDANDO)
+                StatusAtendimento status = StatusAtendimento.valueOf(statusString.toUpperCase());
+                lista = atendimentoRepository.buscarFilaPorStatus(unidadeId, status, inicioDia, fimDia);
+            } catch (IllegalArgumentException e) {
+                // Se mandar status inválido, retorna lista vazia (ou poderia lançar erro)
+                return List.of();
+            }
+        } else {
+            // Se não veio status, traz tudo do dia
+            lista = atendimentoRepository.findByUnidadeSaudeIdAndDataHoraChegadaBetweenOrderByDataHoraChegadaAsc(
+                    unidadeId, inicioDia, fimDia);
+        }
+
+        // 3. Converte para DTO
+        return lista.stream()
+                .map(atendimentoMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
 }
