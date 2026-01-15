@@ -25,8 +25,14 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid LoginRequestDTO dto) {
 
+        String loginLimpo = dto.getLogin();
+
+        if (loginLimpo != null && (loginLimpo.contains(".") || loginLimpo.contains("-"))) {
+            loginLimpo = loginLimpo.replaceAll("\\D", "");
+        }
+
         var usernamePassword = new UsernamePasswordAuthenticationToken(
-                dto.getLogin(),
+                loginLimpo,     // Passamos o login tratado
                 dto.getSenha()
         );
 

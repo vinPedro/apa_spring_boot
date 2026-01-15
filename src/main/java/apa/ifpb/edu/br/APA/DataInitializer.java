@@ -63,13 +63,16 @@ public class DataInitializer implements CommandLineRunner {
         if (unidadeExistente.isEmpty()) {
             UnidadeSaudeDTO dto = new UnidadeSaudeDTO();
             dto.setCodigoCnes("0000000");
-            dto.setCep("58540000");
+            dto.setCep("58540000"); // CEP Válido para o ViaCEP buscar
             dto.setCnpj("99999999000199");
             dto.setNome("PSF DE TESTE AUTOMATICO");
-            /*dto.setLogradouro("Rua do Teste");
+            // Endereço será preenchido pelo Service via CEP (se implementado no UnidadeService também)
+            // Caso contrário, pode descomentar abaixo se o UnidadeService NÃO usar ViaCEP
+            /* dto.setLogradouro("Rua do Teste");
             dto.setBairro("Bairro Teste");
             dto.setMunicipio("Cidade Teste");
-            dto.setUf("PB");*/
+            dto.setUf("PB");
+            */
 
             UnidadeSaudeDTO salva = unidadeSaudeService.criarUnidade(dto);
             unidadeId = salva.getId();
@@ -84,6 +87,7 @@ public class DataInitializer implements CommandLineRunner {
         // ---------------------------------------------------------
         // O login do profissional é o CPF. Vamos usar um CPF de teste.
         String cpfProfissional = "02902248458";
+
         if (usuarioRepository.findByLogin(cpfProfissional).isEmpty()) {
             ProfissionalRequestDTO proDto = new ProfissionalRequestDTO();
             proDto.setNomeCompleto("Dr. Médico de Teste");
@@ -98,6 +102,7 @@ public class DataInitializer implements CommandLineRunner {
             proDto.setSenha("medico123"); // Senha do profissional
 
             try {
+                // O Service vai buscar endereço pelo CEP (se houver CEP no DTO) e criar o Usuário com Login=CPF
                 profissionalService.criarProfissional(proDto);
                 System.out.println(" > Profissional criado: Login '" + cpfProfissional + "' / Senha 'medico123'");
             } catch (Exception e) {
@@ -108,29 +113,38 @@ public class DataInitializer implements CommandLineRunner {
         // ---------------------------------------------------------
         // 4. SETUP PACIENTE
         // ---------------------------------------------------------
-        // O login do paciente é o Email.
-        String emailPaciente = "paciente.teste@email.com";
-        if (usuarioRepository.findByLogin(emailPaciente).isEmpty()) {
+        // --- CORREÇÃO CARD 3: Login deve ser o CPF ---
+        String cpfPaciente = "28551036491";
+
+        // Verificamos se existe pelo CPF (que é o login agora)
+        if (usuarioRepository.findByLogin(cpfPaciente).isEmpty()) {
             PacienteRequestDTO pacDto = new PacienteRequestDTO();
             pacDto.setNomeCompleto("Paciente Exemplo da Silva");
-            pacDto.setCpf("28551036491");
-            pacDto.setCep("58540000");
+            pacDto.setCpf(cpfPaciente);
+
+            pacDto.setCep("58540000"); // ViaCEP vai preencher logradouro, bairro, etc.
             pacDto.setCns("200000000000002");
             pacDto.setDataNascimento(LocalDate.of(1990, 1, 1));
             pacDto.setSexo(Sexo.MASCULINO);
             pacDto.setRacacor(RacaCor.PARDA);
             pacDto.setTelefone("83988887777");
-            pacDto.setEmail(emailPaciente);
-            /*pacDto.setLogradouro("Rua dos Pacientes, 100");
+            pacDto.setEmail("paciente.teste@email.com"); // Email informativo
+
+            // Campos de endereço comentados pois o Service usa ViaCEP
+            /*
+            pacDto.setLogradouro("Rua dos Pacientes, 100");
             pacDto.setBairro("Centro");
             pacDto.setMunicipio("Cidade Teste");
-            pacDto.setUf("PB");*/
+            pacDto.setUf("PB");
+            */
+
             pacDto.setSenha("paciente123"); // Senha do paciente
             pacDto.setUnidadeSaudeId(unidadeId); // Vincula à unidade criada acima
 
             try {
+                // O Service cria o Usuário automaticamente com Login = CPF
                 pacienteService.criarPaciente(pacDto);
-                System.out.println(" > Paciente criado: Login '" + emailPaciente + "' / Senha 'paciente123'");
+                System.out.println(" > Paciente criado: Login '" + cpfPaciente + "' / Senha 'paciente123'");
             } catch (Exception e) {
                 System.err.println(" ! Erro ao criar Paciente: " + e.getMessage());
             }

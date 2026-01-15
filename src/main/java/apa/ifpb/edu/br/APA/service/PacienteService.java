@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,8 +38,10 @@ public class PacienteService {
 
         validarCpfECns(dto.getCpf(), dto.getCns(), null);
 
-        usuarioRepository.findByLogin(dto.getEmail()).ifPresent(u -> {
-            throw new OperacaoInvalidaException("Email já cadastrado para outro usuário.");
+        String loginCpf = dto.getCpf().replaceAll("\\D", "");
+
+        usuarioRepository.findByLogin(loginCpf).ifPresent(u -> {
+            throw new OperacaoInvalidaException("Já existe um usuário cadastrado com este CPF.");
         });
 
         Paciente paciente = pacienteMapper.toEntity(dto);
@@ -48,15 +51,17 @@ public class PacienteService {
 
         String senhaCriptografada = passwordEncoder.encode(dto.getSenha());
 
+        // Cria o usuário usando CPF como login
         Usuario novoUsuario = new Usuario(
                 null,
-                dto.getEmail(),
+                loginCpf,
                 senhaCriptografada,
                 Role.ROLE_PACIENTE
         );
 
         paciente.setUsuario(novoUsuario);
 
+        // Busca endereço via CEP
         ViaCEPResponseDTO endereco = viaCEPCliente.buscarCEP(dto.getCep());
         paciente.setLogradouro(endereco.getLogradouro());
         paciente.setBairro(endereco.getBairro());
@@ -74,7 +79,6 @@ public class PacienteService {
         return pacienteMapper.toResponseDTO(paciente);
     }
 
-
     @Transactional(readOnly = true)
     public List<PacienteResponseDTO> listarTodos() {
         return pacienteRepository.findAll()
@@ -87,20 +91,26 @@ public class PacienteService {
     public PacienteResponseDTO atualizarPaciente(Long id, PacienteRequestDTO dto) {
 
         Paciente pacienteExistente = buscarPacienteExistente(id);
+
+        // Valida se CPF/CNS já existem em OUTRO paciente
         validarCpfECns(dto.getCpf(), dto.getCns(), id);
 
-        String novoEmail = dto.getEmail();
-        String emailAtual = pacienteExistente.getUsuario().getLogin();
+        // --- ATUALIZAÇÃO DO LOGIN (Se o CPF mudar) ---
+        String novoCpfLimpo = dto.getCpf().replaceAll("\\D", "");
+        String loginAtual = pacienteExistente.getUsuario().getLogin();
 
-        if (novoEmail != null && !novoEmail.equals(emailAtual)) {
-            usuarioRepository.findByLogin(novoEmail).ifPresent(u -> {
-                throw new OperacaoInvalidaException("Email já cadastrado para outro usuário.");
+        // Se o CPF foi alterado, precisamos atualizar o Login do Usuário também
+        if (!novoCpfLimpo.equals(loginAtual)) {
+            usuarioRepository.findByLogin(novoCpfLimpo).ifPresent(u -> {
+                throw new OperacaoInvalidaException("O novo CPF informado já possui um usuário cadastrado.");
             });
-            pacienteExistente.getUsuario().setLogin(novoEmail); // Atualiza o login
+            pacienteExistente.getUsuario().setLogin(novoCpfLimpo);
         }
 
+        // Atualiza os dados da entidade Paciente (inclusive o email, que agora é apenas informativo)
         pacienteMapper.updateEntityFromDTO(dto, pacienteExistente);
 
+        // Verifica mudança de UBS
         Long idUbsDto = dto.getUnidadeSaudeId();
         Long idUbsExistente = pacienteExistente.getUnidadeSaudeVinculada().getId();
 
@@ -109,7 +119,7 @@ public class PacienteService {
             pacienteExistente.setUnidadeSaudeVinculada(novaUbs);
         }
 
-
+        // Atualiza endereço via CEP
         ViaCEPResponseDTO endereco = viaCEPCliente.buscarCEP(dto.getCep());
         pacienteExistente.setLogradouro(endereco.getLogradouro());
         pacienteExistente.setBairro(endereco.getBairro());
@@ -125,7 +135,6 @@ public class PacienteService {
     @Transactional
     public void deletarPaciente(Long id) {
         Paciente paciente = buscarPacienteExistente(id);
-
         pacienteRepository.delete(paciente);
     }
 

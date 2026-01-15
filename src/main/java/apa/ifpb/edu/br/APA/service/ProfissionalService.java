@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +37,9 @@ public class ProfissionalService {
 
         validarCpfCnsEmail(dto.getCpf(), dto.getCns(), dto.getEmailInstitucional(), null);
 
-        usuarioRepository.findByLogin(dto.getCpf()).ifPresent(u -> {
+        String loginCpf = dto.getCpf().replaceAll("\\D", "");
+
+        usuarioRepository.findByLogin(loginCpf).ifPresent(u -> {
             throw new OperacaoInvalidaException("CPF já cadastrado como login para outro usuário.");
         });
 
@@ -49,7 +52,7 @@ public class ProfissionalService {
 
         Usuario novoUsuario = new Usuario(
                 null,
-                dto.getCpf(),
+                loginCpf,
                 senhaCriptografada,
                 Role.ROLE_PROFISSIONAL
         );
@@ -81,14 +84,15 @@ public class ProfissionalService {
 
         validarCpfCnsEmail(dto.getCpf(), dto.getCns(), dto.getEmailInstitucional(), id);
 
-        String novoCpf = dto.getCpf();
-        String cpfAtual = profissionalExistente.getUsuario().getLogin();
+        // --- CORREÇÃO CARD 3: Atualizar Login com CPF limpo ---
+        String novoCpfLimpo = dto.getCpf().replaceAll("\\D", "");
+        String loginAtual = profissionalExistente.getUsuario().getLogin();
 
-        if (novoCpf != null && !novoCpf.equals(cpfAtual)) {
-            usuarioRepository.findByLogin(novoCpf).ifPresent(u -> {
+        if (!novoCpfLimpo.equals(loginAtual)) {
+            usuarioRepository.findByLogin(novoCpfLimpo).ifPresent(u -> {
                 throw new OperacaoInvalidaException("CPF já cadastrado como login para outro usuário.");
             });
-            profissionalExistente.getUsuario().setLogin(novoCpf);
+            profissionalExistente.getUsuario().setLogin(novoCpfLimpo);
         }
 
         profissionalMapper.updateEntityFromDTO(dto, profissionalExistente);
@@ -142,7 +146,7 @@ public class ProfissionalService {
                 profissionais = profissionalRepository.findByCnsContaining(cnsLimpo);
                 break;
             default:
-                // Se mandar um tipo inválido, retorna lista vazia ou lança erro
+                // Se mandar um tipo inválido, retorna lista vazia
                 return List.of();
         }
 
