@@ -51,4 +51,14 @@ public class AtendimentoController {
         List<AtendimentoResponseDTO> fila = atendimentoService.listarFila(unidadeSaudeId, status);
         return ResponseEntity.ok(fila);
     }
+
+    // PATCH /api/atendimentos/{id}/cancelar
+    @PatchMapping("/{id}/cancelar")
+    public ResponseEntity<Void> cancelarAtendimento(
+            @PathVariable Long id,
+            @RequestParam(required = false) String motivo) {
+
+        atendimentoService.cancelarAtendimento(id, motivo);
+        return ResponseEntity.noContent().build();
+    }
 }

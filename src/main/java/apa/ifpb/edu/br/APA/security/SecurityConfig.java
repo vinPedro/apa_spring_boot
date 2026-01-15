@@ -80,6 +80,8 @@ public class SecurityConfig {
                         // PATCH: Profissional chama o paciente (altera status)
                         .requestMatchers(HttpMethod.PATCH, "/api/atendimentos/**").hasAnyRole("PROFISSIONAL", "ADMIN")
 
+                        .requestMatchers(HttpMethod.PATCH, "/api/atendimentos/*/cancelar").hasAnyRole("ADMIN", "PROFISSIONAL")
+
                         .requestMatchers("/api/fichamentos/**").hasAnyRole("ADMIN", "PROFISSIONAL")
 
                         .requestMatchers("/api/prontuarios/**").hasAnyRole("ADMIN", "PROFISSIONAL")

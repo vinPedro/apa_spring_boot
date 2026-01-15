@@ -15,6 +15,8 @@ import java.util.Optional;
 @Repository
 public interface AtendimentoRepository extends JpaRepository<Atendimento, Long> {
 
+    // Verifica se existe algum registro para este paciente que esteja em um dos status passados
+    boolean existsByPacienteIdAndStatusIn(Long pacienteId, List<StatusAtendimento> statusList);
 
 
     // Conta quantos atendimentos de um tipo (P ou PR) existem numa unidade a partir de uma data (hoje)

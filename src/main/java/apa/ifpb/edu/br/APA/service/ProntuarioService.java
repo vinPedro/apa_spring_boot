@@ -74,4 +74,12 @@ public class ProntuarioService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public ProntuarioResponseDTO buscarPorId(Long id) {
+        Prontuario prontuario = prontuarioRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Prontuário não encontrado com ID: " + id));
+
+        return prontuarioMapper.toDTO(prontuario);
+    }
+
 }

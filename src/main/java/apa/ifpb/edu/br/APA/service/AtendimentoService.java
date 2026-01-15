@@ -4,6 +4,7 @@ import apa.ifpb.edu.br.APA.dto.AtendimentoRequestDTO;
 import apa.ifpb.edu.br.APA.dto.AtendimentoResponseDTO;
 import apa.ifpb.edu.br.APA.dto.ChamarPacienteDTO;
 import apa.ifpb.edu.br.APA.dto.PainelResponseDTO;
+import apa.ifpb.edu.br.APA.exception.OperacaoInvalidaException;
 import apa.ifpb.edu.br.APA.exception.RecursoNaoEncontradoException;
 import apa.ifpb.edu.br.APA.mapper.AtendimentoMapper;
 import apa.ifpb.edu.br.APA.model.*;
@@ -37,6 +38,16 @@ public class AtendimentoService {
 
     @Transactional
     public AtendimentoResponseDTO entrarNaFila(AtendimentoRequestDTO dto) {
+
+        List<StatusAtendimento> statusAtivos = List.of(
+                StatusAtendimento.AGUARDANDO,
+                StatusAtendimento.PRONTO_PARA_CONSULTA,
+                StatusAtendimento.EM_CONSULTA
+        );
+
+        if (atendimentoRepository.existsByPacienteIdAndStatusIn(dto.getPacienteId(), statusAtivos)) {
+            throw new OperacaoInvalidaException("Este paciente já possui um atendimento em andamento. Finalize ou cancele o anterior.");
+        }
 
         // 1. Busca Paciente e Unidade (Lança erro 404 se não achar)
         Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
@@ -193,6 +204,22 @@ public class AtendimentoService {
         atendimento.setStatus(PRONTO_PARA_CONSULTA);
 
         // 3. Salva no banco (o JPA/Hibernate fará a atualização)
+        atendimentoRepository.save(atendimento);
+    }
+
+    @Transactional
+    public void cancelarAtendimento(Long atendimentoId, String motivo) {
+        Atendimento atendimento = atendimentoRepository.findById(atendimentoId)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Atendimento não encontrado"));
+
+        // Regra de Negócio: Não pode cancelar se já acabou
+        if (atendimento.getStatus() == StatusAtendimento.CONCLUIDO) {
+            throw new OperacaoInvalidaException("Não é possível cancelar um atendimento já concluído.");
+        }
+
+        // Atualiza status
+        atendimento.setStatus(StatusAtendimento.CANCELADO);
+
         atendimentoRepository.save(atendimento);
     }
 }

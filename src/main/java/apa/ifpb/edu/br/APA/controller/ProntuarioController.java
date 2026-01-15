@@ -19,13 +19,14 @@ public class ProntuarioController {
 
     private final ProntuarioService prontuarioService;
 
+    // Criar Prontuário
     @PostMapping
     public ResponseEntity<ProntuarioResponseDTO> finalizarAtendimento(@RequestBody @Valid ProntuarioRequestDTO dto) {
         ProntuarioResponseDTO response = prontuarioService.salvarProntuario(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // GET /api/prontuarios?pacienteId=1&medicoId=2...
+    // Busca Dinâmica (Lista) - Já estava correto, mantivemos igual
     @GetMapping
     public ResponseEntity<List<ProntuarioResponseDTO>> pesquisar(
             @RequestParam(required = false) String cpfPaciente,
@@ -37,4 +38,11 @@ public class ProntuarioController {
         return ResponseEntity.ok(historico);
     }
 
+    // --- NOVO: Busca por ID (Para o Modal de Detalhes) ---
+    @GetMapping("/{id}")
+    public ResponseEntity<ProntuarioResponseDTO> buscarPorId(@PathVariable Long id) {
+        // Você precisa garantir que esse método exista no ProntuarioService
+        ProntuarioResponseDTO prontuario = prontuarioService.buscarPorId(id);
+        return ResponseEntity.ok(prontuario);
+    }
 }
