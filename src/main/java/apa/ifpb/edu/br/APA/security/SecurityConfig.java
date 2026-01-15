@@ -74,7 +74,7 @@ public class SecurityConfig {
 
                         // --- ROTAS DE ATENDIMENTO (FILA) ---
                         // POST: Paciente entra na fila
-                        .requestMatchers(HttpMethod.POST, "/api/atendimentos").hasAnyRole("PACIENTE", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/atendimentos").hasAnyRole("PACIENTE", "ADMIN", "PROFISSIONAL")
                         // GET: Profissional vê a fila (e Paciente talvez queira ver sua posição)
                         .requestMatchers(HttpMethod.GET, "/api/atendimentos/**").authenticated()
                         // PATCH: Profissional chama o paciente (altera status)

@@ -2,7 +2,6 @@ package apa.ifpb.edu.br.APA.service;
 
 import apa.ifpb.edu.br.APA.dto.ProntuarioRequestDTO;
 import apa.ifpb.edu.br.APA.dto.ProntuarioResponseDTO;
-import apa.ifpb.edu.br.APA.exception.OperacaoInvalidaException;
 import apa.ifpb.edu.br.APA.exception.RecursoNaoEncontradoException;
 import apa.ifpb.edu.br.APA.mapper.ProntuarioMapper;
 import apa.ifpb.edu.br.APA.model.*;
@@ -33,12 +32,18 @@ public class ProntuarioService {
         Atendimento atendimento = atendimentoRepository.findById(dto.getAtendimentoId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Atendimento não encontrado"));
 
-        if (atendimento.getStatus() != StatusAtendimento.EM_CONSULTA) {
-            throw new OperacaoInvalidaException("Não é possível gerar prontuário. O atendimento não está em andamento.");
-        }
-
-        Prontuario prontuario = prontuarioMapper.toEntity(dto);
+        Prontuario prontuario = new Prontuario();
         prontuario.setAtendimento(atendimento);
+
+        prontuario.setQueixaPrincipal(dto.getQueixaPrincipal());
+        prontuario.setHistoricoDoenca(dto.getHistoricoDoenca());
+        prontuario.setExameFisico(dto.getExameFisico());
+        prontuario.setDiagnostico(dto.getDiagnostico());
+
+        prontuario.setPrescricaoMedica(dto.getPrescricaoMedica());
+        prontuario.setExamesSolicitados(dto.getExamesSolicitados());
+        prontuario.setAtestadoDias(dto.getAtestadoDias());
+
         prontuario.setDataHoraFinalizacao(LocalDateTime.now());
 
         Prontuario salvo = prontuarioRepository.save(prontuario);

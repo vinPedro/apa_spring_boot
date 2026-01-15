@@ -4,6 +4,7 @@ package apa.ifpb.edu.br.APA.controller;
 import apa.ifpb.edu.br.APA.dto.AtendimentoRequestDTO;
 import apa.ifpb.edu.br.APA.dto.AtendimentoResponseDTO;
 import apa.ifpb.edu.br.APA.dto.ChamarPacienteDTO;
+import apa.ifpb.edu.br.APA.dto.DadosConsultaDTO;
 import apa.ifpb.edu.br.APA.service.AtendimentoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,12 @@ public class AtendimentoController {
     public ResponseEntity<AtendimentoResponseDTO> chamarProximo(@RequestBody @Valid ChamarPacienteDTO dto) {
         AtendimentoResponseDTO atendimento = atendimentoService.chamarProximoPaciente(dto);
         return ResponseEntity.ok(atendimento);
+    }
+
+    @GetMapping("/{id}/dados-consulta")
+    public ResponseEntity<DadosConsultaDTO> getDadosConsulta(@PathVariable Long id) {
+        DadosConsultaDTO dados = atendimentoService.buscarDadosParaConsulta(id);
+        return ResponseEntity.ok(dados);
     }
 
     @GetMapping("/fila/{unidadeId}")

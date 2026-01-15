@@ -1,17 +1,11 @@
 package apa.ifpb.edu.br.APA.service;
 
-import apa.ifpb.edu.br.APA.dto.AtendimentoRequestDTO;
-import apa.ifpb.edu.br.APA.dto.AtendimentoResponseDTO;
-import apa.ifpb.edu.br.APA.dto.ChamarPacienteDTO;
-import apa.ifpb.edu.br.APA.dto.PainelResponseDTO;
+import apa.ifpb.edu.br.APA.dto.*;
 import apa.ifpb.edu.br.APA.exception.OperacaoInvalidaException;
 import apa.ifpb.edu.br.APA.exception.RecursoNaoEncontradoException;
 import apa.ifpb.edu.br.APA.mapper.AtendimentoMapper;
 import apa.ifpb.edu.br.APA.model.*;
-import apa.ifpb.edu.br.APA.repository.AtendimentoRepository;
-import apa.ifpb.edu.br.APA.repository.PacienteRepository;
-import apa.ifpb.edu.br.APA.repository.ProfissionalRepository;
-import apa.ifpb.edu.br.APA.repository.UnidadeSaudeRepository;
+import apa.ifpb.edu.br.APA.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -34,6 +28,7 @@ public class AtendimentoService {
     private final PacienteRepository pacienteRepository;
     private final UnidadeSaudeRepository unidadeSaudeRepository;
     private final ProfissionalRepository profissionalRepository;
+    private final FichamentoRepository fichamentoRepository;
     private final AtendimentoMapper atendimentoMapper;
 
     @Transactional
@@ -83,6 +78,31 @@ public class AtendimentoService {
 
         // 5. Retorna o DTO de resposta
         return atendimentoMapper.toResponseDTO(salvo);
+    }
+
+    @Transactional(readOnly = true)
+    public DadosConsultaDTO buscarDadosParaConsulta(Long atendimentoId) {
+        Atendimento atendimento = atendimentoRepository.findById(atendimentoId)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Atendimento não encontrado"));
+
+        // Dados do Paciente
+        var paciente = atendimento.getPaciente();
+
+        // Dados da Triagem (Fichamento)
+        // Precisamos achar o fichamento feito para ESSE atendimento específico
+        var fichamento = fichamentoRepository.findByAtendimentoId(atendimentoId)
+                .orElseThrow(() -> new OperacaoInvalidaException("Este atendimento ainda não passou pela Triagem."));
+
+        return new DadosConsultaDTO(
+                paciente.getNomeCompleto(),
+                paciente.getCpf(),
+                paciente.getDataNascimento(),
+                fichamento.getPeso(),
+                fichamento.getAltura(),
+                fichamento.getPressaoArterial(),
+                fichamento.getTemperatura(),
+                fichamento.getSintomas()
+        );
     }
 
     @Transactional(readOnly = true)
