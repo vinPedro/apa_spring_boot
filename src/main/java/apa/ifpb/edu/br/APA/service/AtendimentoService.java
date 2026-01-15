@@ -181,29 +181,23 @@ public class AtendimentoService {
     @Transactional
     public void chamarProxima(Long unidadeId) {
 
-        // 1. Busca o primeiro paciente na fila que está no status 'AGUARDANDO'
-        // Utilizamos o método de busca que você já tem no Repository, que ordena corretamente.
         Optional<Atendimento> proximoAtendimento = atendimentoRepository
                 .findFirstByUnidadeSaudeIdAndStatusOrderByPrioridadeDescDataHoraChegadaAsc(
                         unidadeId,
-                        AGUARDANDO
+                        StatusAtendimento.PRONTO_PARA_CONSULTA
                 );
 
         if (proximoAtendimento.isEmpty()) {
-            // Não há pacientes aguardando para serem chamados.
-            throw new RecursoNaoEncontradoException("Não há pacientes aguardando na fila para a unidade ID: " + unidadeId);
+            // Se não achar ninguém pronto, avisa.
+            // Mesmo que tenha gente AGUARDANDO, eles não podem ser chamados no painel ainda.
+            throw new RecursoNaoEncontradoException("Não há pacientes triados aguardando chamada médica nesta unidade");
         }
 
-        // 2. Atualiza o Atendimento
+        // Atualiza o Atendimento para aparecer na TV
         Atendimento atendimento = proximoAtendimento.get();
-
-
         atendimento.setDataHoraChamada(LocalDateTime.now());
 
-        // Move o paciente para o status de 'sendo chamado na recepção'
-        atendimento.setStatus(PRONTO_PARA_CONSULTA);
 
-        // 3. Salva no banco (o JPA/Hibernate fará a atualização)
         atendimentoRepository.save(atendimento);
     }
 
