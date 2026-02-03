@@ -29,4 +29,15 @@ public class ExameController {
     public ResponseEntity<List<ExameResponseDTO>> listarExames() {
         return ResponseEntity.ok(exameService.listarTodos());
     }
+
+    @GetMapping("/paciente/{cpf}")
+    public ResponseEntity<List<ExameResponseDTO>> recuperarPorCpf(@PathVariable String cpf) {
+        List<ExameResponseDTO> exames = exameService.recuperarPorCpf(cpf);
+        return ResponseEntity.ok(exames);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ExameResponseDTO> recuperarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(exameService.recuperarPorProtocolo(id));
+    }
 }

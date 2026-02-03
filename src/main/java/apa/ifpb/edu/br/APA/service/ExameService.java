@@ -53,4 +53,18 @@ public class ExameService {
                 .map(exameMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
+
+    public List<ExameResponseDTO> recuperarPorCpf(String cpf) {
+        List<Exame> exames = exameRepository.findByPacienteCpf(cpf);
+
+        return exames.stream()
+                .map(exameMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public ExameResponseDTO recuperarPorProtocolo(Long id) {
+        Exame exame = exameRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Exame não encontrado com o protocolo: " + id));
+        return exameMapper.toResponseDTO(exame);
+    }
 }

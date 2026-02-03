@@ -112,6 +112,10 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/painel/**").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/api/exames/paciente/**").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/api/exames/{id}").permitAll()
+
                         .anyRequest().authenticated()
                 )
 
