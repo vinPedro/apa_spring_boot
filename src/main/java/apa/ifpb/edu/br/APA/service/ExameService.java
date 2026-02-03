@@ -36,8 +36,18 @@ public class ExameService {
 
     @Transactional
     public ExameResponseDTO criarExame(ExameRequestDTO dto) {
-        Paciente paciente = pacienteRepository.findById(dto.pacienteId())
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Paciente não encontrado com ID: " + dto.pacienteId()));
+        Paciente paciente;
+
+        // LÓGICA HÍBRIDA: Tenta pelo ID, se não der, tenta pelo CPF
+        if (dto.pacienteId() != null) {
+            paciente = pacienteRepository.findById(dto.pacienteId())
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Paciente não encontrado com ID: " + dto.pacienteId()));
+        } else if (dto.pacienteCpf() != null && !dto.pacienteCpf().isBlank()) {
+            paciente = pacienteRepository.findByCpf(dto.pacienteCpf())
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Paciente não encontrado com CPF: " + dto.pacienteCpf()));
+        } else {
+            throw new IllegalArgumentException("É obrigatório informar o ID ou o CPF do paciente.");
+        }
 
         Profissional profissional = profissionalRepository.findById(dto.profissionalId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Profissional não encontrado com ID: " + dto.profissionalId()));

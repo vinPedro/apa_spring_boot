@@ -12,6 +12,7 @@ public class AtendimentoResponseDTO {
     private LocalDateTime dataHoraChegada;
     private StatusAtendimento status;
     private TipoPrioridade prioridade;
+    private Long pacienteId;
     private String pacienteNome;
     private String unidadeSaudeNome;
 }

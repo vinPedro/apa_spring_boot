@@ -21,6 +21,8 @@ public interface AtendimentoMapper {
     @Mapping(target = "unidadeSaude", ignore = true)
     Atendimento toEntity(AtendimentoRequestDTO dto);
 
+    @Mapping(source = "paciente.id", target = "pacienteId")
+
     // Da Entidade para DTO de Resposta:
     // Pegamos os nomes de dentro dos objetos relacionados
     @Mapping(source = "paciente.nomeCompleto", target = "pacienteNome")
